@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DKWin Prediction Tool</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #fbeaff;
+      padding: 10px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      padding: 20px;
+      background: #fff0f6;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(255, 0, 150, 0.2);
+    }
+
+    h2 {
+      text-align: center;
+      color: #ff0066;
+      font-family: 'monospace';
+      font-size: 22px;
+      text-shadow: 0 0 3px #ff66cc;
+      margin-bottom: 15px;
+    }
+
+    .info-label {
+      font-weight: bold;
+      color: #555;
+      margin-top: 15px;
+      font-size: 15px;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      margin-top: 10px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      outline: none;
+    }
+
+    button {
+      background: linear-gradient(45deg, #ff69b4, #ff007f);
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+
+    #prediction {
+      margin-top: 20px;
+      padding: 15px;
+      background: #ffffff;
+      border-radius: 15px;
+      border: 2px dashed #ff69b4;
+      font-size: 18px;
+      display: none;
+      text-align: center;
+    }
+
+    #prediction.processing {
+      background: #fff3fb;
+      border: 2px dashed #bbb;
+      color: #777;
+      font-style: italic;
+    }
+
+    .history {
+      margin-top: 20px;
+      background: #f7f7f7;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      max-height: 180px;
+      overflow-y: auto;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+    }
+
+    .history-title {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 8px;
+      border-bottom: 1px dashed #ccc;
+      padding-bottom: 4px;
+    }
+
+    .telegram {
+      text-align: center;
+      margin-top: 25px;
+    }
+
+    .telegram a {
+      display: inline-block;
+      background: #0088cc;
+      color: white;
+      padding: 10px 25px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    /* Mobile Optimization */
+    @media screen and (max-width: 480px) {
+      .container {
+        padding: 15px;
+      }
+      h2 {
+        font-size: 20px;
+      }
+      input, button {
+        font-size: 15px;
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>📱 DKWIN FREE HACK</h2>
+
+    <div class="info-label">Enter Last 3 Numbers (e.g. 2,6,3)</div>
+    <input type="text" id="lastThree" placeholder="Example: 2,6,3">
+
+    <button onclick="predict()">Predict Now</button>
+
+    <div id="prediction" class="processing">⌛ Waiting for input...</div>
+
+    <div class="history" id="history">
+      <div class="history-title">📜 Prediction History:</div>
+    </div>
+
+    <div class="telegram">
+      <a href="https://t.me/d4kxo" target="_blank">📲 Join Telegram: @d4kxo</a>
+    </div>
+  </div>
+
+  <script>
+    function playBeep() {
+      const beep = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQoAAAAA");
+      beep.play();
+    }
+
+    function predict() {
+      const input = document.getElementById("lastThree").value.trim();
+      const predictionBox = document.getElementById("prediction");
+      const historyBox = document.getElementById("history");
+
+      predictionBox.style.display = "block";
+      predictionBox.classList.add("processing");
+      predictionBox.innerHTML = "⏳ Processing prediction...";
+
+      const numbers = input.split(",").map(n => parseInt(n.trim())).filter(n => !isNaN(n) && n >= 0 && n <= 9);
+
+      if (numbers.length !== 3) {
+        setTimeout(() => {
+          predictionBox.classList.remove("processing");
+          predictionBox.innerHTML = "❌ Please enter exactly 3 numbers between 0 and 9.";
+        }, 2000);
+        return;
+      }
+
+      setTimeout(() => {
+        const bigs = numbers.filter(n => n >= 5).length;
+        const smalls = 3 - bigs;
+        let predictedType = bigs > smalls ? "Big (5-9)" : "Small (0-4)";
+        let last = numbers[numbers.length - 1];
+        let color = "Green";
+        if (last % 3 === 0) color = "Red";
+        else if (last % 3 === 1) color = "Pink";
+
+        const result = `🔮 Prediction: <b>${predictedType}</b><br>🎨 Color: <b>${color}</b>`;
+        predictionBox.classList.remove("processing");
+        predictionBox.innerHTML = result;
+
+        playBeep();
+
+        const time = new Date().toLocaleTimeString();
+        const historyLine = `<div>🕓 [${time}] ➤ Input: [${numbers.join(", ")}] → <b>${predictedType}</b>, <span style="color:${color.toLowerCase()}">${color}</span></div>`;
+        historyBox.innerHTML += historyLine;
+      }, 3000 + Math.floor(Math.random() * 1000));
+    }
+  </script>
+
+</body>
+</html>
