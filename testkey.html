@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DKWin Prediction Tool</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fbeaff;
+      padding: 15px;
+    }
+
+    .container {
+      max-width: 480px;
+      margin: auto;
+      background: #fff0f6;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(255, 0, 150, 0.2);
+      padding: 20px;
+      display: none;
+      flex-direction: column;
+      gap: 20px;
+      animation: fadeIn 1s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 24px;
+      color: #ff0066;
+      font-family: 'monospace';
+      text-shadow: 0 0 3px #ff66cc;
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: #444;
+      font-size: 16px;
+      text-align: left;
+    }
+
+    input {
+      padding: 14px;
+      font-size: 18px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      width: 100%;
+      text-align: center;
+    }
+
+    button {
+      padding: 14px;
+      font-size: 18px;
+      background: linear-gradient(45deg, #ff69b4, #ff007f);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #prediction {
+      text-align: center;
+      padding: 15px;
+      background: #fff;
+      border: 2px dashed #ff69b4;
+      border-radius: 12px;
+      font-size: 18px;
+      display: none;
+    }
+
+    #prediction.processing {
+      background: #fff5fc;
+      color: #777;
+      font-style: italic;
+    }
+
+    .history {
+      background: #f7f7f7;
+      padding: 10px;
+      border-radius: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+      font-size: 15px;
+    }
+
+    .history-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #333;
+      border-bottom: 1px dashed #bbb;
+      padding-bottom: 5px;
+    }
+
+    .telegram {
+      text-align: center;
+    }
+
+    .telegram a {
+      display: inline-block;
+      background: #0088cc;
+      color: white;
+      padding: 10px 25px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    /* Access Key Popup */
+    .popup {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+
+    .popup-content {
+      background: #fff0f6;
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(255,0,100,0.4);
+      animation: slideIn 0.8s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(-50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .popup input {
+      margin-top: 15px;
+      width: 80%;
+      border-radius: 8px;
+      border: 1px solid #aaa;
+    }
+
+    .popup button {
+      margin-top: 15px;
+      width: 50%;
+    }
+
+    .popup-error {
+      color: red;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    .shake {
+      animation: shake 0.3s ease;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      50% { transform: translateX(10px); }
+      75% { transform: translateX(-10px); }
+      100% { transform: translateX(0); }
+    }
+
+    @media (max-width: 480px) {
+      h2 { font-size: 20px; }
+      input, button { font-size: 16px; padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Access Key Popup -->
+  <div class="popup" id="popup">
+    <div class="popup-content" id="popupBox">
+      <h2>🔐 Enter Access Key</h2>
+      <input type="password" id="accessInput" placeholder="Enter secret key">
+      <button onclick="checkAccess()">Unlock</button>
+      <div class="popup-error" id="accessError"></div>
+      <div style="margin-top:15px;">
+        <a href="https://t.me/d4kxo" target="_blank" style="color:#007bff; text-decoration:none; font-weight:bold; font-size:15px;">
+          🔐 Get Key from @d4kxo
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Tool -->
+  <div class="container" id="mainTool">
+    <h2>📱 DKWIN FREE HACK</h2>
+
+    <div class="info-label">🔢 Enter Last 3 Period Digits (e.g. 276)</div>
+    <input type="text" id="lastThree" maxlength="3" placeholder="Type 3 digits only">
+
+    <button onclick="predict()">🎯 Predict Now</button>
+
+    <div id="prediction" class="processing">⌛ Waiting for input...</div>
+
+    <div class="history" id="history">
+      <div class="history-title">📜 Prediction History:</div>
+    </div>
+
+    <div class="telegram">
+      <a href="https://t.me/d4kxo" target="_blank">📲 Join Telegram: @d4kxo</a>
+    </div>
+  </div>
+
+  <script>
+    const correctKey = "vipfor55d";
+
+    function checkAccess() {
+      const inputKey = document.getElementById("accessInput").value.trim();
+      const errorBox = document.getElementById("accessError");
+      const popup = document.getElementById("popup");
+      const box = document.getElementById("popupBox");
+
+      if (inputKey === correctKey) {
+        popup.style.display = "none";
+        document.getElementById("mainTool").style.display = "flex";
+      } else {
+        errorBox.innerText = "❌ Invalid Access Key!";
+        box.classList.add("shake");
+        setTimeout(() => {
+          box.classList.remove("shake");
+        }, 400);
+      }
+    }
+
+    function playBeep() {
+      const beep = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQoAAAAA");
+      beep.play();
+    }
+
+    function predict() {
+      const input = document.getElementById("lastThree").value.trim();
+      const predictionBox = document.getElementById("prediction");
+      const historyBox = document.getElementById("history");
+
+      predictionBox.style.display = "block";
+      predictionBox.classList.add("processing");
+      predictionBox.innerHTML = "⏳ Processing prediction...";
+
+      if (!/^\d{3}$/.test(input)) {
+        setTimeout(() => {
+          predictionBox.classList.remove("processing");
+          predictionBox.innerHTML = "❌ Please enter exactly 3 digits (0-9 only).";
+        }, 1500);
+        return;
+      }
+
+      const digits = input.split("").map(d => parseInt(d));
+
+      setTimeout(() => {
+        const bigs = digits.filter(n => n >= 5).length;
+        const smalls = 3 - bigs;
+        const predictedType = bigs > smalls ? "Big (5-9)" : "Small (0-4)";
+        const last = digits[2];
+        let color = "Green";
+        if (last % 3 === 0) color = "Red";
+        else if (last % 3 === 1) color = "Pink";
+
+        const result = `🔮 Prediction: <b>${predictedType}</b><br>🎨 Color: <b>${color}</b>`;
+        predictionBox.classList.remove("processing");
+        predictionBox.innerHTML = result;
+
+        playBeep();
+
+        const time = new Date().toLocaleTimeString();
+        const historyLine = `<div>🕓 [${time}] ➤ Input: [${digits.join(", ")}] → <b>${predictedType}</b>, <span style="color:${color.toLowerCase()}">${color}</span></div>`;
+        historyBox.innerHTML += historyLine;
+      }, 3000 + Math.floor(Math.random() * 1000));
+    }
+  </script>
+
+</body>
+</html>
